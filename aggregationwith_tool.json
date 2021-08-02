@@ -1,0 +1,65 @@
+db.getCollection("ShopItemPurchase").aggregate(
+
+	// Pipeline
+	[
+		// Stage 1
+		{
+			$match: {
+			    // enter query here
+			    "verified" : true, "refunded" : false
+			}
+		},
+
+		// Stage 2
+		{
+			$project: {
+			    // enter query here
+			     "_id" : 0, "_shopItem_id" : 1, "_user_id" : 1
+			}
+		},
+
+		// Stage 3
+		{
+			$lookup: // Equality Match
+			{
+			    from : "Pack",
+			    localField : "_user_id",
+			    foreignField : "_user_id",
+			    as : "packs"
+			}
+			
+			// Uncorrelated Subqueries
+			// (supported as of MongoDB 3.6)
+			// {
+			//    from: "<collection to join>",
+			//    let: { <var_1>: <expression>, …, <var_n>: <expression> },
+			//    pipeline: [ <pipeline to execute on the collection to join> ],
+			//    as: "<output array field>"
+			// }
+		},
+
+		// Stage 4
+		{
+			$unwind: {
+			    // enter query here
+			    path: "$packs"
+						
+			}
+		},
+
+		// Stage 5
+		{
+			$group: {
+			    _id : "_user_id" 
+			}
+		},
+	],
+
+	// Options
+	{
+
+	}
+
+	// Created with Studio 3T, the IDE for MongoDB - https://studio3t.com/
+
+);

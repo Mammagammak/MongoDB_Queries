@@ -1,0 +1,27 @@
+db.getCollection("ShopItemPurchase").aggregate([
+    {
+        $match: { "verified" : true, "refunded" : false }
+
+    },
+    {
+        $project: { _id: 0, _shopItem_id: 1, _user_id: 1 }
+    },
+    {
+        $lookup: {
+            from: "Pack",
+            localField: "_user_id",
+            foreignField: "_user_id",
+            as: "packs"
+        }
+    },
+    {
+        $unwind:
+        '$packs'
+    
+    }
+
+]).pretty()
+
+
+
+
